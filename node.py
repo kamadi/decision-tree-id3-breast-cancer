@@ -21,11 +21,22 @@ class Node(object):
         self.arr.append(value)
         self.length = len(self.arr)
 
+    def equals(self, item):
+        return (self.type is InputType.CLUMP_THICKNESS and self.data == item.clump_thickness) or \
+               (self.type is InputType.UNIFORMITY_OF_CELL_SIZE and self.data == item.uniformity_of_cell_size) or \
+               (self.type is InputType.UNIFORMITY_OF_CELL_SHAPE and self.data == item.uniformity_of_cell_shape) or \
+               (self.type is InputType.MARGINAL_ADHESION and self.data == item.marginal_adhesion) or \
+               (self.type is InputType.SINGLE_EPITHELIAL_CELL_SIZE and self.data == item.single_epithelial_cell_size) or \
+               (self.type is InputType.BARE_NUCLEI and self.data == item.bare_nuclei) or \
+               (self.type is InputType.BLAND_CHROMATIN and self.data == item.bland_chromatin) or \
+               (self.type is InputType.NORMAL_NUCLEOLI and self.data == item.normal_nucleoli) or \
+               (self.type is InputType.MITOSES and self.data == item.mitoses)
+
 
 class NodeCreator:
 
     @staticmethod
-    def create_node(parent, arr):
+    def create_node(arr):
 
         def get_positive_key(type, index):
             return type.value + str(InputData.BENIGN) + str(index)
@@ -114,7 +125,19 @@ class NodeCreator:
                 if i == item.get_value(max_class):
                     child.add_item(item)
             if child.length == 0:
-                child.result = -1;
+                child.result = -1
             node.add_child(child)
 
         return node
+
+    @staticmethod
+    def create_child_node(node):
+        for child in node.children:
+            child_node = NodeCreator.create_node(child.arr)
+            if child_node.result is not None:
+                child.result = child_node.result
+            else:
+                child.children.append(child_node)
+
+            for item in child.children:
+                NodeCreator.create_child_node(item)

@@ -19,3 +19,18 @@ def calculate_total_entropy(positive, negative, total):
     if total == 0:
         return 0
     return ((positive + negative) / total) * calculate_entropy(positive, negative)
+
+
+class TestUtil:
+
+    def test(self, node, item):
+        if node.result is not None:
+            return node.result
+        else:
+            for child in node.children:
+                if child.data is not None:
+                    if child.equals(item):
+                        return self.test(child, item)
+                else:
+                    for child_node in child.children:
+                        return self.test(child_node, item)
